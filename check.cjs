@@ -22,26 +22,40 @@ assert.equal(C.merge(b,b).attempts.length,4);
 assert.throws(()=>C.validateBackup({...b,version:3},seed,topics));
 assert.throws(()=>C.validateBackup({...b,attempts:[{...rows[0],choice:'true'}]},seed,topics));
 assert.throws(()=>C.validateBackup({...b,attempts:[{...rows[0],qid:'unknown'}]},seed,topics));
-assert.ok(seed.length>=270,`Expected >=270 questions, got ${seed.length}`);
+assert.ok(seed.length>=415,`Expected >=415 questions, got ${seed.length}`);
 assert.equal(new Set(seed.map(q=>q.id)).size,seed.length);
-assert.equal(new Set(seed.map(q=>q.text.trim().toLowerCase())).size,seed.length,'Duplicate question text found');
+assert.equal(new Set(seed.map(q=>q.text.replace(/\s+/g,' ').trim().toLowerCase())).size,seed.length,'Duplicate question text found');
 assert.equal(prompts.length,6);
 const hardQs=seed.filter(q=>q.hard);
-assert.ok(hardQs.length>=90,`Expected >=90 hard questions, got ${hardQs.length}`);
+const realQs=seed.filter(q=>q.real);
+assert.ok(hardQs.length>=140,`Expected >=140 hard questions, got ${hardQs.length}`);
+assert.ok(realQs.length>=145,`Expected >=145 real Cebraspe questions, got ${realQs.length}`);
 for(const q of seed){
  assert.ok(topics.find(t=>t.id===q.topic),`Invalid topic ${q.topic}`);
  assert.equal(typeof q.answer,'boolean');
  assert.ok(q.text&&q.explanation&&q.source&&q.source.title,`Incomplete question ${q.id}`);
+ assert.ok(!/^(Certo|Errado)\.\s/i.test(q.explanation),`Redundant leading Certo/Errado in explanation of ${q.id}`);
+ if(q.real){
+  assert.match(q.origin,/^Prova Real • (Cebraspe|CESPE\/Cebraspe) — .+ \(\d{4}\)$/,`Invalid real origin on ${q.id}: ${q.origin}`);
+ }else{
+  assert.match(q.origin,/^Inédita (Nível Difícil )?• /,`Non-real question ${q.id} must be clearly labeled Inédita: ${q.origin}`);
+ }
 }
 for(const t of topics){
  const cnt=seed.filter(q=>q.topic===t.id).length;
  const hcnt=hardQs.filter(q=>q.topic===t.id).length;
- assert.ok(cnt>=18,`Topic ${t.id} has only ${cnt} questions`);
+ const rcnt=realQs.filter(q=>q.topic===t.id).length;
+ assert.ok(cnt>=20,`Topic ${t.id} has only ${cnt} questions`);
  assert.ok(hcnt>=6,`Topic ${t.id} has only ${hcnt} hard questions`);
+ assert.ok(rcnt>=8,`Topic ${t.id} has only ${rcnt} real Cebraspe questions`);
 }
 const basCount=seed.filter(q=>topics.find(t=>t.id===q.topic).group==='Básicos').length;
 const espCount=seed.filter(q=>topics.find(t=>t.id===q.topic).group==='Específicos').length;
-assert.ok(basCount>=110,`Expected >=110 Básicos, got ${basCount}`);
-assert.ok(espCount>=155,`Expected >=155 Específicos, got ${espCount}`);
+const realBasCount=realQs.filter(q=>topics.find(t=>t.id===q.topic).group==='Básicos').length;
+const realEspCount=realQs.filter(q=>topics.find(t=>t.id===q.topic).group==='Específicos').length;
+assert.ok(basCount>=165,`Expected >=165 Básicos, got ${basCount}`);
+assert.ok(espCount>=245,`Expected >=245 Específicos, got ${espCount}`);
+assert.ok(realBasCount>=55,`Expected >=55 real Básicos, got ${realBasCount}`);
+assert.ok(realEspCount>=85,`Expected >=85 real Específicos, got ${realEspCount}`);
 for(const file of ['data.js','core.js','app.js'])new vm.Script(fs.readFileSync(path.join(dir,file),'utf8'));
-console.log(`PASS: ${seed.length} questions (${basCount} P1 + ${espCount} P2, including ${hardQs.length} Nível Difícil across all ${topics.length} topics), ${prompts.length} essay prompts, simulado mode, backup validation and JS syntax verified.`);
+console.log(`PASS: ${seed.length} questions (${basCount} P1 + ${espCount} P2 | ${realQs.length} Provas Reais Cebraspe [${realBasCount} P1 + ${realEspCount} P2] | ${hardQs.length} Nível Difícil across all ${topics.length} topics), ${prompts.length} essay prompts, simulado mode, backup validation and JS syntax verified.`);

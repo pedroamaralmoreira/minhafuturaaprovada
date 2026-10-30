@@ -1524,6 +1524,24 @@ tbody tr:last-child td {
   line-height: 1.55;
 }
 
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.tag.tag-real {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #e9f7ef;
+  color: #145a32;
+  border: 1px solid #b7e4c7;
+  font-weight: 700;
+}
+
 .tag.tag-hard {
   display: inline-block;
   padding: 3px 10px;
