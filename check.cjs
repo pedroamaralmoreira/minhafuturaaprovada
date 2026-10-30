@@ -1,0 +1,28 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const dir=__dirname;
+const C=require(path.join(dir,'core.js'));
+const ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(dir,'data.js'),'utf8')+';this.seed=SEED;this.topics=TOPICS;',ctx);
+const seed=JSON.parse(JSON.stringify(ctx.seed)),topics=JSON.parse(JSON.stringify(ctx.topics));
+const a=(id,qid,choice,key=true)=>({id,qid,choice,key,topic:'epi',confidence:'high',at:'2026-10-29T20:00:00.000Z',session:'s1'});
+const rows=[a('1','campo-1',true),a('2','campo-2',true,false),a('3','campo-3',null),a('4','campo-2',false,false)];
+assert.deepEqual(C.stats(rows),{total:4,correct:2,wrong:1,blank:1,answered:3,accuracy:67,net:1,unique:3});
+assert.equal(C.stats([]).accuracy,null);
+assert.equal(C.stats([a('1','campo-1',null)]).net,0);
+assert.deepEqual(C.pending(rows),['campo-3']);
+assert.equal(C.first(rows).length,3);
+assert.equal(C.stats(C.first(rows)).accuracy,50);
+assert.equal(new Set(C.shuffle(seed).map(q=>q.id)).size,seed.length);
+const b=C.empty();b.attempts=rows;
+assert.equal(C.validateBackup(b,seed,topics),b);
+assert.equal(C.merge(b,b).attempts.length,4);
+assert.throws(()=>C.validateBackup({...b,version:3},seed,topics));
+assert.throws(()=>C.validateBackup({...b,attempts:[{...rows[0],choice:'true'}]},seed,topics));
+assert.throws(()=>C.validateBackup({...b,attempts:[{...rows[0],qid:'unknown'}]},seed,topics));
+assert.equal(seed.length,26);
+assert.equal(new Set(seed.map(q=>q.id)).size,26);
+for(const q of seed){assert.ok(topics.find(t=>t.id===q.topic));assert.equal(typeof q.answer,'boolean');assert.ok(q.text&&q.explanation&&q.source.title);}
+for(const file of ['data.js','core.js','app.js'])new vm.Script(fs.readFileSync(path.join(dir,file),'utf8'));
+console.log('PASS: metrics, first attempts, review resolution, blanks, backup validation/merge, question integrity and JavaScript syntax.');
