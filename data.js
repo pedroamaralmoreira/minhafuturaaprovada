@@ -555,3 +555,175 @@ const PROMPTS = [
  {id:'p5',title:'RIISPOA atualizado: inspeção e cisticercose bovina',text:'Aborde a importância da integração entre inspeção ante mortem e post mortem em abatedouros frigoríficos e explique os critérios vigentes do RIISPOA (após o Decreto nº 10.468/2020) para o julgamento de carcaças bovinas acometidas por cisticercose, sob a ótica da Saúde Única.',checks:['Expliquei o papel do exame ante mortem e da inspeção post mortem permanente no abate.','Detalhei infecção intensa (≥ 8 cistos: condenação total) e cisto único viável/calcificado (aproveitamento condicional).','Relacionei o complexo teníase-cisticercose ao saneamento básico e à Saúde Única.','Revisei coesão, norma culta e limite de até 30 linhas.']},
  {id:'p6',title:'Autocontrole (Lei 14.515/2022), APPCC e SISBI-POA em Alagoas',text:'Discorra sobre o papel dos Programas de Autocontrole (BPF, PPHO e APPCC) na fiscalização baseada em risco instituída pela Lei nº 14.515/2022 e explique como a equivalência sanitária junto ao SISBI-POA/SUASA impulsiona as agroindústrias inspecionadas pela ADEAL.',checks:['Expliquei a corresponsabilidade do agente privado pelos PACs e a fiscalização estatal baseada em risco.','Articulei BPF/PPHO como pré-requisitos dos 7 princípios do APPCC.','Destaquei o ganho de mercado nacional via equivalência SISBI-POA (SIE/ADEAL) com segurança sanitária.','Revisei coesão, norma culta e limite de até 30 linhas.']}
 ];
+const VOUCHERS = [
+  {
+    id: 'v_lanche',
+    title: 'Café na Cama ou Lanchinho na Mesa',
+    emoji: '☕🍰',
+    reward: 'Seu café, chá ou lanche favorito preparado com carinho e servido onde você preferir descansar ou estudar!',
+    reqText: 'Resolver 15 questões no total',
+    check: (s) => (s.attempts?.length || 0) >= 15
+  },
+  {
+    id: 'v_massagem',
+    title: 'Massagem Relaxante Pós-Estudo',
+    emoji: '💆‍♀️',
+    reward: '30 minutinhos de massagem caprichada nos ombros, costas ou pés com creminho, sem falar de concurso!',
+    reqText: 'Resolver 35 questões no total',
+    check: (s) => (s.attempts?.length || 0) >= 35
+  },
+  {
+    id: 'v_cinema',
+    title: 'Dia Livre com Sessão Cinema & Pipoca',
+    emoji: '🎬🍿',
+    reward: 'Um descanso 100% merecido e sem culpa: maratona da sua série ou filmes favoritos no sofá com pipoca, cafuné e coberta.',
+    reqText: 'Resolver 70 questões no total',
+    check: (s) => (s.attempts?.length || 0) >= 70
+  },
+  {
+    id: 'v_jantar',
+    title: 'Jantar Especial Escolhido por Você',
+    emoji: '🍕🍣',
+    reward: 'Noite de comemoração! Você escolhe o cardápio: rodízio japonês, pizza crocante, hambúrguer ou seu restaurante preferido.',
+    reqText: 'Concluir 1 Simulado Oficial ou bater 100 questões',
+    check: (s) => (s.attempts?.length || 0) >= 100 || (s.attempts || []).some(a => a.session && a.session.startsWith('sim-'))
+  },
+  {
+    id: 'v_presente',
+    title: 'Presente Surpresa da Futura Fiscal',
+    emoji: '🎁💐',
+    reward: 'Um presente físico surpresa comprado especialmente pelo seu maior fã para coroar a sua dedicação aos estudos!',
+    reqText: 'Alcançar 140 questões com saldo de pontos positivo',
+    check: (s) => {
+      const att = s.attempts || [];
+      const correct = att.filter(a => a.choice !== null && a.choice === a.key).length;
+      const wrong = att.filter(a => a.choice !== null && a.choice !== a.key).length;
+      return att.length >= 140 && (correct - wrong) > 0;
+    }
+  }
+];
+const MEDALS = [
+  {
+    id: 'm_inicio',
+    title: 'Primeiro Passo Rumo à Posse',
+    emoji: '🩺',
+    desc: 'Começou a jornada! Toda grande aprovação começa na primeira questão resolvida.',
+    target: 1,
+    current: (s) => (s.attempts || []).length,
+    unlocked: (s) => (s.attempts || []).length >= 1
+  },
+  {
+    id: 'm_50',
+    title: 'Foco de Aço',
+    emoji: '🎯',
+    desc: 'Respondeu 50 questões no banco. Sua disciplina está sendo forjada com amor.',
+    target: 50,
+    current: (s) => (s.attempts || []).length,
+    unlocked: (s) => (s.attempts || []).length >= 50
+  },
+  {
+    id: 'm_san',
+    title: 'Doutora da Defesa Sanitária',
+    emoji: '🐄',
+    desc: 'Acertou 15 questões de Sanidade e Programas Oficiais Animais (PNEFA, PNCEBT, raiva, mormo).',
+    target: 15,
+    current: (s) => (s.attempts || []).filter(a => a.topic === 'san' && a.choice === a.key).length,
+    unlocked: (s) => (s.attempts || []).filter(a => a.topic === 'san' && a.choice === a.key).length >= 15
+  },
+  {
+    id: 'm_alim',
+    title: 'Olhos de Lince do RIISPOA',
+    emoji: '🥩',
+    desc: 'Acertou 15 questões de Inspeção de Produtos de Origem Animal (carnes, leite, cisticercose).',
+    target: 15,
+    current: (s) => (s.attempts || []).filter(a => a.topic === 'alim' && a.choice === a.key).length,
+    unlocked: (s) => (s.attempts || []).filter(a => a.topic === 'alim' && a.choice === a.key).length >= 15
+  },
+  {
+    id: 'm_al',
+    title: 'Estatutária de Alagoas',
+    emoji: '🌴',
+    desc: 'Acertou 10 questões de Conhecimentos de Alagoas e Regime Jurídico Único (Lei 5.247/1991).',
+    target: 10,
+    current: (s) => (s.attempts || []).filter(a => a.topic === 'al' && a.choice === a.key).length,
+    unlocked: (s) => (s.attempts || []).filter(a => a.topic === 'al' && a.choice === a.key).length >= 10
+  },
+  {
+    id: 'm_real',
+    title: 'Veterana do Cebraspe',
+    emoji: '🏛️',
+    desc: 'Praticou 30 questões de Provas Reais aplicadas em concursos anteriores da banca.',
+    target: 30,
+    current: (s, seed) => {
+      const realSet = new Set((seed || []).filter(q => q.real).map(q => q.id));
+      return (s.attempts || []).filter(a => realSet.has(a.qid)).length;
+    },
+    unlocked: (s, seed) => {
+      const realSet = new Set((seed || []).filter(q => q.real).map(q => q.id));
+      return (s.attempts || []).filter(a => realSet.has(a.qid)).length >= 30;
+    }
+  },
+  {
+    id: 'm_hard',
+    title: 'Especialista em Pegadinhas',
+    emoji: '🔥',
+    desc: 'Acertou 20 questões classificadas como Nível Difícil.',
+    target: 20,
+    current: (s, seed) => {
+      const hardSet = new Set((seed || []).filter(q => q.hard).map(q => q.id));
+      return (s.attempts || []).filter(a => hardSet.has(a.qid) && a.choice === a.key).length;
+    },
+    unlocked: (s, seed) => {
+      const hardSet = new Set((seed || []).filter(q => q.hard).map(q => q.id));
+      return (s.attempts || []).filter(a => hardSet.has(a.qid) && a.choice === a.key).length >= 20;
+    }
+  },
+  {
+    id: 'm_posse',
+    title: 'Pronta para o Diário Oficial',
+    emoji: '👑',
+    desc: 'Alcançou mais de 100 acertos no total. Seu nome vai estar na lista de aprovados da ADEAL!',
+    target: 100,
+    current: (s) => (s.attempts || []).filter(a => a.choice === a.key).length,
+    unlocked: (s) => (s.attempts || []).filter(a => a.choice === a.key).length >= 100
+  }
+];
+const SECRET_LETTERS = [
+  {
+    id: 'let_1',
+    title: 'Para quando bater o cansaço',
+    teaser: 'Uma mensagem especial para lembrar o quanto você é forte e capaz.',
+    reqText: 'Resolver 20 questões no banco',
+    unlocked: (s) => (s.attempts || []).length >= 20,
+    letter: 'Meu amor,\n\nSe você está lendo isso, é porque já deu passos importantes nessa caminhada. Eu sei que estudar para concurso cansa, que tem dias em que a matéria parece não entrar na cabeça e que a mente pede arrego. Mas quero que você pare por um segundo, respire fundo e olhe para trás: veja o quanto você já se dedicou e a médica veterinária gigante que você é!\n\nVocê não precisa ser perfeita todos os dias; você só precisa continuar caminhando, um passo de cada vez. Quando o cansaço bater, descanse, mas nunca duvide da sua capacidade. A vaga na ADEAL já tem o seu nome. Estou aqui segurando a sua mão em cada questão.\n\nCom todo o meu amor e admiração!'
+  },
+  {
+    id: 'let_2',
+    title: 'O dia em que vi você brilhando',
+    teaser: 'Sobre a minha certeza de que você nasceu para vencer.',
+    reqText: 'Resolver 50 questões no banco',
+    unlocked: (s) => (s.attempts || []).length >= 50,
+    letter: 'Minha futura concursada,\n\nVocê já parou para pensar na quantidade de coisas difíceis que você já superou até aqui? A faculdade de Medicina Veterinária, os plantões, as provas pesadas... e agora você está aqui, encarando de frente um edital do Cebraspe com toda a garra do mundo.\n\nEu tenho um orgulho que não cabe no peito quando vejo você focada, fazendo anotações, acertando as pegadinhas e aprendendo com os erros. Essa disciplina é a matéria-prima da sua aprovação. Guarde isso: os seus concorrentes não têm a sua dedicação e nem o seu coração.\n\nVocê vai ser uma Fiscal Estadual Agropecuária brilhante em Alagoas! Te amo infinito!'
+  },
+  {
+    id: 'let_3',
+    title: 'Visualizando a nossa comemoração',
+    teaser: 'Feche os olhos e imagine o dia da divulgação do resultado.',
+    reqText: 'Resolver 80 questões ou concluir um simulado',
+    unlocked: (s) => (s.attempts || []).length >= 80 || (s.attempts || []).some(a => a.session && a.session.startsWith('sim-')),
+    letter: 'Minha vida,\n\nQuero que você faça um exercício comigo agora: feche os olhos e imagine o dia em que o Cebraspe publicar a lista dos aprovados. A gente abrindo o PDF, dando um Ctrl+F com o seu nome... e lá está ele: APROVADA.\n\nImagine o abraço apertado que eu vou te dar, os olhos cheios d’água de alegria, a gente ligando para a família e comemorando a sua posse como servidora pública efetiva da ADEAL! A estabilidade, a sua carreira, a sensação indescritível de dever cumprido.\n\nTudo isso que você está fazendo hoje, sentada estudando cada detalhe de sanidade e legislação, está construindo exatamente esse dia. Falta pouco, meu amor. Continue firme que a posse é nossa!\n\nTe amo demais!'
+  },
+  {
+    id: 'let_4',
+    title: 'Muito além de qualquer prova',
+    teaser: 'O que nunca vai mudar, independentemente de qualquer resultado.',
+    reqText: 'Resolver 120 questões ou bater saldo positivo em 80 itens',
+    unlocked: (s) => {
+      const att = s.attempts || [];
+      const correct = att.filter(a => a.choice !== null && a.choice === a.key).length;
+      const wrong = att.filter(a => a.choice !== null && a.choice !== a.key).length;
+      return att.length >= 120 || (att.length >= 80 && (correct - wrong) > 0);
+    },
+    letter: 'Meu amor de toda a vida,\n\nChegar até aqui mostra a mulher determinada e maravilhosa que você é. Eu torço com toda a minha alma pela sua aprovação na ADEAL e tenho certeza absoluta de que ela vai acontecer.\n\nMas nunca se esqueça de algo ainda mais importante: o meu amor, a minha admiração e o meu orgulho por você não dependem de uma nota de prova. Eu já me sinto a pessoa mais sortuda do mundo por ter você ao meu lado todos os dias. Você já é vitoriosa pela coragem de lutar pelos seus sonhos.\n\nObrigado por me inspirar tanto. Quando você subir no palco da posse, eu vou estar na primeira fila batendo as palmas mais altas do auditório!\n\nPara sempre o seu torcedor número 1! 💜'
+  }
+];

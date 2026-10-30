@@ -73,28 +73,209 @@ function examCountdown(){
  if(diff===0)return 'Hoje é o dia da sua aprovação! · 13/12/2026';
  return 'Edital nº 1/2026 · Cebraspe (ADEAL/AL)';
 }
-const icons={home:'M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z',book:'M12 5v16M3 4h5a4 4 0 0 1 4 2 4 4 0 0 1 4-2h5v15h-5a5 5 0 0 0-4 2 5 5 0 0 0-4-2H3Z',chart:'M4 20h17M6 16v-5M12 16V4M18 16V8',repeat:'M20 7H7a4 4 0 0 0-4 4M16 3l4 4-4 4M4 17h13a4 4 0 0 0 4-4M8 13l-4 4 4 4',pen:'m15 4 5 5M4 20l4-1L21 6l-4-4L4 15Z',folder:'M3 6h7l2 3h9v11H3Z',arrow:'M4 12h16m-6-6 6 6-6 6',check:'m5 12 4 4L19 6',leaf:'M20 3C8 2 2 9 6 16c7 4 14-2 14-13ZM4 21 15 10',heart:'M12 20.5s-7.5-4.6-7.5-10a4.4 4.4 0 0 1 7.5-3.1 4.4 4.4 0 0 1 7.5 3.1c0 5.4-7.5 10-7.5 10Z',star:'m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z',target:'M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm0 5a4 4 0 1 0 4 4 4 4 0 0 0-4-4Z',download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',plus:'M12 5v14M5 12h14',data:'M4 5h16v14H4ZM4 10h16M9 10v9'};
+const icons={home:'M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z',book:'M12 5v16M3 4h5a4 4 0 0 1 4 2 4 4 0 0 1 4-2h5v15h-5a5 5 0 0 0-4 2 5 5 0 0 0-4-2H3Z',chart:'M4 20h17M6 16v-5M12 16V4M18 16V8',repeat:'M20 7H7a4 4 0 0 0-4 4M16 3l4 4-4 4M4 17h13a4 4 0 0 0 4-4M8 13l-4 4 4 4',pen:'m15 4 5 5M4 20l4-1L21 6l-4-4L4 15Z',folder:'M3 6h7l2 3h9v11H3Z',arrow:'M4 12h16m-6-6 6 6-6 6',check:'m5 12 4 4L19 6',leaf:'M20 3C8 2 2 9 6 16c7 4 14-2 14-13ZM4 21 15 10',heart:'M12 20.5s-7.5-4.6-7.5-10a4.4 4.4 0 0 1 7.5-3.1 4.4 4.4 0 0 1 7.5 3.1c0 5.4-7.5 10-7.5 10Z',star:'m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z',target:'M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm0 5a4 4 0 1 0 4 4 4 4 0 0 0-4-4Z',download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',plus:'M12 5v14M5 12h14',data:'M4 5h16v14H4ZM4 10h16M9 10v9',gift:'M20 12v10H4V12m16-4h-4a3 3 0 0 0-6 0H4a2 2 0 0 0-2 2v2h20v-2a2 2 0 0 0-2-2Zm-8 0a1 1 0 1 1 2 0v4h-2Zm-4 0a1 1 0 1 1 2 0v4H8Zm4 4v10'};
 const icon=n=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${icons[n]||icons.book}"/></svg>`;
+function launchConfetti(originY=0.5){
+ try{
+  let cv=document.getElementById('confetti-canvas');
+  if(!cv){
+   cv=document.createElement('canvas');
+   cv.id='confetti-canvas';
+   cv.className='confetti-canvas';
+   document.body.appendChild(cv);
+  }
+  const ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;
+  cv.height=window.innerHeight;
+  const colors=['#7c4dcc','#ff6584','#f9c74f','#43aa8b','#577590','#b892ff','#f3722c'];
+  const pieces=Array.from({length:55},()=>({
+   x:cv.width/2+(Math.random()-0.5)*260,
+   y:cv.height*originY,
+   vx:(Math.random()-0.5)*12,
+   vy:-(Math.random()*11+5),
+   size:Math.random()*7+5,
+   color:colors[Math.floor(Math.random()*colors.length)],
+   rotation:Math.random()*360,
+   rotSpeed:(Math.random()-0.5)*14,
+   life:1
+  }));
+  let frame;
+  const start=performance.now();
+  function draw(t){
+   const elapsed=t-start;
+   ctx.clearRect(0,0,cv.width,cv.height);
+   let alive=false;
+   for(const p of pieces){
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=0.35;
+    p.vx*=0.98;
+    p.rotation+=p.rotSpeed;
+    p.life-=0.016;
+    if(p.life>0&&p.y<cv.height){
+     alive=true;
+     ctx.save();
+     ctx.translate(p.x,p.y);
+     ctx.rotate((p.rotation*Math.PI)/180);
+     ctx.fillStyle=p.color;
+     ctx.globalAlpha=Math.max(0,p.life);
+     ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+     ctx.restore();
+    }
+   }
+   if(alive&&elapsed<2200){
+    frame=requestAnimationFrame(draw);
+   }else{
+    ctx.clearRect(0,0,cv.width,cv.height);
+    cv.remove();
+   }
+  }
+  frame=requestAnimationFrame(draw);
+ }catch(e){}
+}
 const button=(label,action,cls='',attrs='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${attrs}>${label}</button>`;
 const link=(url,label,cls='')=>`<a class="${cls}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`;
 const sourceLink=q=>/^https?:\/\//i.test(q.source.url)?link(q.source.url,q.source.title):`<span class="muted">${esc(q.source.title)}</span>`;
 function save(){if(storageIssue){toast('Histórico protegido: exporte os dados existentes antes de continuar.');return false;}try{localStorage.setItem(KEY,JSON.stringify(state));return true;}catch{storageIssue='O navegador não conseguiu salvar. Exporte um backup agora para preservar seu progresso.';toast(storageIssue);return false;}}
 function toast(t){$('#toast').textContent=t;$('#toast').classList.add('show');clearTimeout(window.toastTimeout);window.toastTimeout=setTimeout(()=>$('#toast').classList.remove('show'),4200);}
 function go(v){view=v;render();window.scrollTo({top:0,behavior:'smooth'});}
-const navs=[['home','home','Visão geral'],['practice','book','Praticar questões'],['review','repeat','Caderno de revisão'],['metrics','chart','Meu desempenho'],['essay','pen','Discursiva'],['subjects','folder','Matérias e fontes'],['data','data','Meus dados']];
+const navs=[['home','home','Visão geral'],['practice','book','Praticar questões'],['rewards','gift','Conquistas & Mimos'],['review','repeat','Caderno de revisão'],['metrics','chart','Meu desempenho'],['essay','pen','Discursiva'],['subjects','folder','Matérias e fontes'],['data','data','Meus dados']];
 function render(){
- $('#app').innerHTML=`<div class="shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">${icon('heart')}</span><span class="brand-text">minha futura<br>aprovada<span class="brand-dot">.</span></span></div><div class="brand-sub">RUMO À POSSE</div><div class="nav-label eyebrow muted">SUA PREPARAÇÃO</div><nav class="nav" aria-label="Navegação principal">${navs.map(([id,i,t])=>`<button type="button" data-action="nav" data-value="${id}" class="${view===id?'active':''}" ${view===id?'aria-current="page"':''}>${icon(i)}${t}</button>`).join('')}</nav><div class="side-bottom"><div class="side-note"><div class="eyebrow" style="margin-bottom:6px">TORCIDA NÚMERO 1</div>Eu acredito em você em cada questão.<br>No seu ritmo, meu amor.</div><div class="profile"><div class="avatar">MV</div><div><strong class="small">Medicina Veterinária</strong><div class="muted" style="font-size:11px">Fiscal Estadual Agropecuário</div></div></div></div></aside><div class="body">${storageIssue?`<div class="storage-error" role="alert">${esc(storageIssue)}</div>`:''}<header class="topbar"><div class="crumb"><b class="mobile-brand">minha-futura-aprovada</b>ADEAL / AL <span> / &nbsp; ${navs.find(n=>n[0]===view)?.[2]}</span></div><div class="badge dot">CEBRASPE · MEDICINA VETERINÁRIA</div></header><main class="content" id="main">${({home:home,practice:practice,review:review,metrics:metrics,essay:essay,subjects:subjects,data:dataPage}[view])()}<footer class="footer"><span>minha-futura-aprovada · Feito com todo amor para a minha futura concursada.</span><span>${bank().length} questões no banco · ${button('Backup e +Questões','nav','ghost sm','data-value="data"')}</span></footer></main></div></div>`;
+ $('#app').innerHTML=`<div class="shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">${icon('heart')}</span><span class="brand-text">minha futura<br>aprovada<span class="brand-dot">.</span></span></div><div class="brand-sub">RUMO À POSSE</div><div class="nav-label eyebrow muted">SUA PREPARAÇÃO</div><nav class="nav" aria-label="Navegação principal">${navs.map(([id,i,t])=>`<button type="button" data-action="nav" data-value="${id}" class="${view===id?'active':''}" ${view===id?'aria-current="page"':''}>${icon(i)}${t}</button>`).join('')}</nav><div class="side-bottom"><div class="side-note"><div class="eyebrow" style="margin-bottom:6px">TORCIDA NÚMERO 1</div>Eu acredito em você em cada questão.<br>No seu ritmo, meu amor.</div><div class="profile"><div class="avatar">MV</div><div><strong class="small">Medicina Veterinária</strong><div class="muted" style="font-size:11px">Fiscal Estadual Agropecuário</div></div></div></div></aside><div class="body">${storageIssue?`<div class="storage-error" role="alert">${esc(storageIssue)}</div>`:''}<header class="topbar"><div class="crumb"><b class="mobile-brand">minha-futura-aprovada</b>ADEAL / AL <span> / &nbsp; ${navs.find(n=>n[0]===view)?.[2]}</span></div><div class="badge dot">CEBRASPE · MEDICINA VETERINÁRIA</div></header><main class="content" id="main">${({home:home,practice:practice,rewards:rewards,review:review,metrics:metrics,essay:essay,subjects:subjects,data:dataPage}[view])()}<footer class="footer"><span>minha-futura-aprovada · Feito com todo amor para a minha futura concursada.</span><span>${bank().length} questões no banco · ${button('Backup e +Questões','nav','ghost sm','data-value="data"')}</span></footer></main></div></div>`;
 }
 const title=(h,p,extra='')=>`<div class="page-title"><div><h1>${h}</h1><p>${p}</p></div>${extra}</div>`;
 const stat=(label,value,caption,i)=>`<div class="stat"><div class="stat-label">${label}${icon(i)}</div><div class="num">${value}</div><small>${caption}</small></div>`;
 const stats=s=>`<div class="stats">${stat('Tentativas registradas',s.total,`${s.unique} questões diferentes`,'book')}${stat('Taxa de acerto',fmt(s.accuracy),'Acertos ÷ respostas C/E','target')}${stat('Saldo de pontos',signed(s.net),'Acertos − erros · branco = 0','chart')}${stat('Itens em branco',s.blank,'Também entram no histórico','pen')}</div>`;
 const empty=(h,p,b='')=>`<div class="empty"><div class="empty-icon">${icon('heart')}</div><h3>${h}</h3><p>${p}</p>${b}</div>`;
+function rewardStrip(){
+ const rw=state.rewards||{claimedVouchers:{},openedLetters:{}};
+ const vClaimed=Object.keys(rw.claimedVouchers||{}).length;
+ const mEarned=MEDALS.filter(m=>m.unlocked(state,SEED)).length;
+ const lUnlocked=SECRET_LETTERS.filter(l=>l.unlocked(state)).length;
+ return `<section class="reward-strip"><div><div class="reward-strip-label">${icon('heart')} Mimos & Conquistas de Estudo</div><div class="reward-strip-title">Você já tem <strong>${mEarned} de ${MEDALS.length} medalhas</strong>, <strong>${lUnlocked} cartinha(s) liberada(s)</strong> e <strong>${vClaimed} vale(s) resgatado(s)</strong>!</div></div>${button(`${icon('gift')} Abrir Conquistas e Vales`,'nav','primary sm','data-value="rewards"')}</section>`;
+}
 function home(){const s=Core.stats(state.attempts),pending=Core.pending(state.attempts),seen=new Set(state.attempts.map(a=>a.qid));const studied=TOPICS.filter(t=>state.attempts.some(a=>a.topic===t.id)).length;const featured=['san','alim','legvet','info','al','epi'].map(id=>topic(id)).filter(Boolean);
  return title('Rumo à Posse, Meu Amor','minha-futura-aprovada · Fiscal Estadual Agropecuário — Medicina Veterinária (ADEAL)',button(`${icon('book')} Escolher matéria`,'nav','','data-value="practice"'))+
  `<section class="hero"><div class="hero-copy"><div class="eyebrow">MINHA FUTURA CONCURSADA · ORGULHO DA MINHA VIDA</div><h2>A vaga já é sua,<br>meu amor.</h2><p>Banco focado 100% no Edital nº 1/2026 da ADEAL (Cebraspe): Veterinária, Inspeção, Defesa Sanitária, Informática/IA, Alagoas e Legislação.</p>${button(`${state.session&&!state.session.done?'Continuar de onde parei':'Começar treino de 10 questões'} ${icon('arrow')}`,state.session&&!state.session.done?'resume':'startquick','lime')}</div><div class="hero-art" aria-hidden="true"><svg viewBox="0 0 270 240" fill="none"><circle cx="153" cy="120" r="98" stroke="#c4a7f5" stroke-opacity=".22"/><circle cx="153" cy="120" r="76" stroke="#c4a7f5" stroke-opacity=".24"/><path d="M135 240C137 166 168 124 187 67" stroke="#e2d1ff" stroke-width="2"/><path d="M156 167C91 172 86 127 89 106c48-1 76 20 67 61Z" fill="#7c4dcc"/><path d="M165 137c-12-48 20-70 49-74 4 41-13 68-49 74Z" fill="#c39ef9"/><path d="M143 209c27-49 72-38 93-20-24 33-60 38-93 20Z" fill="#9668e3"/><path d="M184 76c-35-14-38-47-24-68 29 14 39 38 24 68Z" fill="#aa82f0"/><path d="m93 111 62 56m16-38 38-59m-58 138 77-18" stroke="#ece0ff" stroke-opacity=".55"/></svg></div></section>`+
  `<section class="love-note" aria-live="polite"><div class="love-note-main"><div class="love-note-icon">${icon('heart')}</div><div><div class="love-note-label">Bilhetinho para você</div><p class="love-note-text">${esc(LOVE_NOTES[noteIdx])}</p></div></div>${button('Outro bilhetinho','nextnote','sm')}</section>`+
+ rewardStrip()+
  `<section class="exam-strip"><div><strong>Estrutura Oficial · Concurso ADEAL 2026 (Cebraspe)</strong><div class="exam-pills"><span class="exam-pill">${esc(examCountdown())}</span><span class="exam-pill">${bank().filter(isReal).length} Provas Reais Cebraspe</span><span class="exam-pill">${bank().filter(isHard).length} Nível Difícil</span><span class="exam-pill">P1 (50) + P2 (70)</span></div></div><div class="exam-actions">${button('Provas Reais (20)','quickreal','sm')}${button('Desafio Difícil (20)','quickhard','sm')}${button(`${icon('target')} Simulado 100% Provas Reais (120)`,'simuladoreal','primary sm','data-value="120"')}</div></section>`+
  stats(s)+`<div class="grid"><section class="card"><div class="card-head"><div><h2>Seu mapa de aprendizado</h2><p>${studied} de ${TOPICS.length} disciplinas do edital praticadas</p></div>${button(`Ver as ${TOPICS.length} matérias ↗`,'nav','ghost sm','data-value="subjects"')}</div>${featured.map((t,i)=>topicRow(t,i)).join('')}<div class="small-banner">${icon('book')}<div><strong>${seen.size} de ${bank().length} questões já praticadas (${bank().filter(isReal).length} reais de provas Cebraspe)</strong><br><span class="muted">Cobrindo todas as 12 disciplinas do Edital ADEAL 2026 (P1 e P2).</span></div></div></section><section class="card"><div class="card-head"><div><h2>Um olhar para a revisão</h2><p>Transforme dúvidas em pontos líquidos na prova.</p></div>${icon('repeat')}</div>${pending.length?`<div class="num">${pending.length}</div><p class="muted">questões com erro ou resposta em branco na última tentativa.</p><div class="spaced">${button('Revisar agora '+icon('arrow'),'startreview','primary')}</div>`:empty('Tudo começa com uma questão','Ao praticar, os erros e itens em branco aparecerão aqui para você revisitar com calma.',button('Explorar questões','nav','sm','data-value="practice"'))}<div class="small-banner">${icon('heart')}<div>Cada questão resolvida é mais confiança para o grande dia.<br><span class="muted">Estude com leveza, você vai longe!</span></div></div></section></div><div class="notice">Banco atual: ${bank().filter(isReal).length} questões reais já aplicadas pelo Cebraspe + ${SEED.filter(q=>!isReal(q)).length} inéditas focadas nas leis específicas da ADEAL 2026 (${state.custom.length} adicionadas por você).</div>`;
+}
+function rewards(){
+ const rw=state.rewards||={claimedVouchers:{},openedLetters:{}};
+ const mEarned=MEDALS.filter(m=>m.unlocked(state,SEED)).length;
+ const vClaimed=Object.keys(rw.claimedVouchers||{}).length;
+ const lUnlocked=SECRET_LETTERS.filter(l=>l.unlocked(state)).length;
+
+ const vouchersHtml=VOUCHERS.map(v=>{
+  const isUn=v.check(state);
+  const isClaimed=Boolean(rw.claimedVouchers?.[v.id]);
+  const claimedAt=rw.claimedVouchers?.[v.id];
+  return `<div class="voucher-card ${isClaimed?'claimed':isUn?'unlocked':'locked'}">
+   <div class="voucher-notch"></div>
+   <div class="voucher-info">
+    <div class="voucher-badge">${v.emoji} VALE DO AMOR</div>
+    <div class="voucher-title">${esc(v.title)}</div>
+    <div class="voucher-reward">${esc(v.reward)}</div>
+    <div class="voucher-req">${icon('target')} <span>Requisito: <strong>${esc(v.reqText)}</strong></span></div>
+   </div>
+   <div class="voucher-action">
+    ${isClaimed
+      ? `<div class="claimed-stamp">Resgatado em ${date(claimedAt)} ❤️</div>`
+      : isUn
+        ? button(`${icon('heart')} Resgatar Mimo`,'claimvoucher','primary sm',`data-value="${v.id}"`)
+        : `<div class="locked-hint"><span class="lock-icon">🔒</span> Bloqueado</div>`
+    }
+   </div>
+  </div>`;
+ }).join('');
+
+ const medalsHtml=MEDALS.map(m=>{
+  const isUn=m.unlocked(state,SEED);
+  const cur=m.current(state,SEED);
+  const pct=Math.min(100,Math.round((cur/m.target)*100));
+  return `<div class="medal-card ${isUn?'unlocked':'locked'}">
+   <div class="medal-icon-wrap">
+    <span class="medal-emoji">${m.emoji}</span>
+    ${isUn?'<span class="medal-sparkle">✨</span>':''}
+   </div>
+   <h3>${esc(m.title)}</h3>
+   <p class="muted">${esc(m.desc)}</p>
+   <div class="medal-progress">
+    <div class="progress-info">
+     <span>${isUn?'Conquistada! 🎉':'Em progresso'}</span>
+     <span>${cur} / ${m.target}</span>
+    </div>
+    <div class="bar"><span style="width:${pct}%"></span></div>
+   </div>
+  </div>`;
+ }).join('');
+
+ const lettersHtml=SECRET_LETTERS.map(l=>{
+  const isUn=l.unlocked(state);
+  const isOp=Boolean(rw.openedLetters?.[l.id]);
+  return `<div class="letter-card ${isOp?'opened':isUn?'unlocked':'locked'}">
+   <div class="letter-head">
+    <div class="letter-title-row">
+     <span class="letter-stamp">${isOp?'Aberta com amor ❤️':isUn?'Pronta para abrir 💌':'Bloqueada 🔒'}</span>
+    </div>
+    <h3>${esc(l.title)}</h3>
+    <p class="muted small">${esc(l.teaser)}</p>
+   </div>
+   ${!isUn
+     ? `<div class="letter-locked-box">
+         <span class="lock-icon" style="font-size:24px">🔒</span>
+         <div class="small"><strong>Requisito para desbloquear:</strong><br>${esc(l.reqText)}</div>
+        </div>`
+     : isOp
+       ? `<div class="letter-paper">
+           <div class="letter-text">${esc(l.letter).replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>')}</div>
+           <div class="letter-sign">Com todo meu amor para a minha Fiscal Estadual Agropecuária 💜</div>
+          </div>
+          <div class="letter-action-bar">
+           ${button('Guardar / Esconder','toggleletter','ghost sm',`data-value="${l.id}"`)}
+          </div>`
+       : `<div class="letter-unlocked-box">
+           <span style="font-size:24px">💌</span>
+           <div><strong>Você desbloqueou esta cartinha secreta!</strong></div>
+           ${button(`${icon('heart')} Abrir e ler bilhete`,'openletter','primary sm',`data-value="${l.id}"`)}
+          </div>`
+   }
+  </div>`;
+ }).join('');
+
+ return title('Conquistas & Mimos do Meu Amor','Seu esforço diário vale presentes reais, medalhas e cartinhas secretas.')+
+ `<div class="stats">
+  ${stat('Vales resgatados',`${vClaimed} de ${VOUCHERS.length}`,'Cobráveis na vida real','gift')}
+  ${stat('Medalhas obtidas',`${mEarned} de ${MEDALS.length}`,'Distintivos da posse','star')}
+  ${stat('Cartinhas secretas',`${lUnlocked} de ${SECRET_LETTERS.length}`,'Mensagens do coração','heart')}
+  ${stat('Saldo de pontos',signed(Core.stats(state.attempts).net),'Seu progresso cebraspe','chart')}
+ </div>`+
+ `<section class="rewards-section">
+  <div class="rewards-section-head">
+   <span class="rewards-badge">Mimos na Vida Real</span>
+   <h2>🎟️ Vales do Amor (Cobráveis Comigo)</h2>
+   <p>Cada meta de estudo concluída dá direito a um vale oficial! Quando desbloquear, basta clicar em <strong>Resgatar Mimo</strong> e me mostrar a tela para cobrar o seu presente.</p>
+  </div>
+  <div class="vouchers-grid">${vouchersHtml}</div>
+ </section>`+
+ `<section class="rewards-section">
+  <div class="rewards-section-head">
+   <span class="rewards-badge">Insígnias de Conhecimento</span>
+   <h2>🏅 Medalhas da Futura Fiscal</h2>
+   <p>Reconhecimento para cada marco conquistado no edital da ADEAL (Cebraspe), desde a primeira questão até as pegadinhas difíceis.</p>
+  </div>
+  <div class="medals-grid">${medalsHtml}</div>
+ </section>`+
+ `<section class="rewards-section">
+  <div class="rewards-section-head">
+   <span class="rewards-badge">Cartas Especiais</span>
+   <h2>💌 Cartinhas Secretas Desbloqueáveis</h2>
+   <p>Textinhos que escrevi com todo o amor para você ler ao longo das etapas mais desafiadoras da sua preparação.</p>
+  </div>
+  <div class="letters-grid">${lettersHtml}</div>
+ </section>`;
 }
 function topicRow(t,i){const s=Core.stats(Core.first(state.attempts).filter(a=>a.topic===t.id)),cnt=bank().filter(q=>q.topic===t.id).length,rcnt=bank().filter(q=>q.topic===t.id&&isReal(q)).length;return `<div class="topic-row"><div class="topic-symbol">${String(i+1).padStart(2,'0')}</div><div class="topic-body"><h3>${esc(t.name)}</h3><small>${s.total?`${s.total} de ${cnt} vistas (${rcnt} reais Cebraspe)`:`${cnt} questões (${rcnt} reais Cebraspe) · ${t.group}`}</small><div class="bar"><span style="width:${s.accuracy||0}%"></span></div></div><div class="topic-value">${fmt(s.accuracy)}</div>${cnt?button('Praticar','subjectpractice','ghost sm',`data-value="${t.id}"`):''}</div>`;}
 function topicOptions(sel,all=true){
@@ -132,7 +313,7 @@ function begin(){if(storageIssue){toast(storageIssue);return;}const qs=available
 function sessionAttempts(s=state.session){return state.attempts.filter(a=>a.session===s.id);}
 function activeSession(){const s=state.session,q=question(s.ids[s.index]),t=topic(q.topic),a=sessionAttempts().find(a=>a.qid===q.id),isTest=s.mode==='test'||s.mode==='simulado',answered=sessionAttempts().length;return title(s.mode==='simulado'?'Simulado Oficial ADEAL · P1 + P2':isTest?'Seu minissimulado':'Um passo de cada vez, meu amor','A sessão fica salva automaticamente se você precisar pausar.',button('Pausar','nav','','data-value="home"'))+`<div class="question"><div class="split"><span class="muted small">ITEM ${s.index+1} DE ${s.ids.length} · ${t.group==='Básicos'?'PROVA P1 (BÁSICOS)':'PROVA P2 (ESPECÍFICOS)'}</span><span class="small muted">${answered} registradas</span></div><div class="question-progress"><span style="width:${100*answered/s.ids.length}%"></span></div><section class="card"><div class="card-head"><span class="badge">${esc((t.group==='Básicos'?'P1 · ':'P2 · ')+t.name)}</span>${button(icon('star')+(state.favorites.includes(q.id)?' Salva':' Salvar'),'favorite','ghost sm',`data-value="${esc(q.id)}" aria-pressed="${state.favorites.includes(q.id)}"`)}</div>${questionTags(q)}<p class="question-text">${esc(q.text)}</p><p class="small muted">Julgue o item a seguir conforme o padrão Cebraspe.</p><div class="choices">${[[true,'C','Certo'],[false,'E','Errado'],[null,'—','Em branco']].map(([v,letter,label])=>`<button class="choice ${(a?a.choice:choice)===v?'selected':''}" data-action="choice" data-value="${v}" aria-pressed="${(a?a.choice:choice)===v}" ${a?'disabled':''}><span>${letter}</span>${label}</button>`).join('')}</div>${!a?`<div class="confidence"><span>Como está sua confiança?</span>${[['low','Baixa'],['mid','Média'],['high','Alta']].map(([v,l])=>`<button class="pill ${confidence===v?'active':''}" data-action="confidence" data-value="${v}" aria-pressed="${confidence===v}">${l}</button>`).join('')}</div>${button('Registrar resposta','answer','primary',choice===undefined?'disabled':'')}`:isTest?'<div class="status-box">Resposta registrada, meu amor! A correção comentada e sua nota líquida aparecerão ao finalizar.</div>':feedback(q,a)}${a&&!isTest?`<label class="field spaced">Minha anotação<textarea data-note="${esc(q.id)}" placeholder="O que quero lembrar ao revisar?">${esc(state.notes[q.id]||'')}</textarea></label>`:''}<div class="question-actions">${button('← Anterior','previous','',s.index===0?'disabled':'')}${s.index<s.ids.length-1?button('Próxima '+icon('arrow'),'next','primary'):button('Finalizar e ver resultado','finish','primary')}</div></section><div class="answer-index" aria-label="Índice de questões">${s.ids.map((id,i)=>`<button data-action="jump" data-value="${i}" class="${sessionAttempts().some(a=>a.qid===id)?'answered':''} ${i===s.index?'current':''}" aria-label="Questão ${i+1}${sessionAttempts().some(a=>a.qid===id)?', registrada':''}">${i+1}</button>`).join('')}</div><div class="split"><span class="small muted">Sair ou pausar não encerra a sessão.</span>${button('Encerrar sessão','finish','ghost sm')}</div></div>`;}
 function feedback(q,a){const blank=a.choice===null,correct=a.choice===q.answer,cheer=pick(blank?CHEER_BLANK:correct?CHEER_CORRECT:CHEER_WRONG,a.id||q.id);return `<div class="feedback ${blank?'blank':correct?'':'wrong'}"><strong>${blank?'Item em branco · 0 ponto':correct?'Você acertou · +1 ponto':'Vale revisar · −1 ponto'}</strong><p class="feedback-cheer">${icon('heart')}<span>${esc(cheer)}</span></p><p>Gabarito: <strong>${q.answer?'Certo':'Errado'}</strong>. ${esc(q.explanation)}</p><small>${sourceLink(q)}</small></div>`;}
-function record(){const s=state.session,q=question(s.ids[s.index]);if(choice===undefined||sessionAttempts().some(a=>a.qid===q.id))return;state.attempts.push({id:uid(),qid:q.id,topic:q.topic,key:q.answer,choice,confidence,at:new Date().toISOString(),session:s.id});save();render();}
+function record(){const s=state.session,q=question(s.ids[s.index]);if(choice===undefined||sessionAttempts().some(a=>a.qid===q.id))return;state.attempts.push({id:uid(),qid:q.id,topic:q.topic,key:q.answer,choice,confidence,at:new Date().toISOString(),session:s.id});if(choice===q.answer)launchConfetti(0.4);save();render();}
 function finishNow(){const s=state.session;const used=new Set(sessionAttempts().map(a=>a.qid));for(const id of s.ids){if(!used.has(id)){const q=question(id);state.attempts.push({id:uid(),qid:id,topic:q.topic,key:q.answer,choice:null,confidence:'low',at:new Date().toISOString(),session:s.id});}}s.done=true;resultId=s.id;save();render();}
 function finish(){const n=state.session.ids.length-sessionAttempts().length;if(n)dialog('Finalizar esta sessão?',`${n} questão(ões) ainda não foram registradas e entrarão como “em branco” (0 ponto). Você também pode pausar e continuar depois.`,'Finalizar',finishNow);else finishNow();}
 function sessionResult(id){
@@ -195,6 +376,37 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
  case 'csv':csv();break;
  case 'essayexport':download(state.drafts[essayId]?.text||'','minha-futura-aprovada-discursiva-'+essayId+'.txt','text/plain;charset=utf-8');break;
  case 'copyprompt':copyPrompt();break;
+ case 'claimvoucher':{
+  const v=VOUCHERS.find(x=>x.id===b.dataset.value);
+  if(!v||!v.check(state))return;
+  state.rewards=state.rewards||{claimedVouchers:{},openedLetters:{}};
+  state.rewards.claimedVouchers[v.id]=new Date().toISOString();
+  save();
+  launchConfetti(0.4);
+  render();
+  toast(`Mimo resgatado com sucesso! Mostra essa tela pro seu amor cobrar: ${v.title} 🥰`);
+  break;
+ }
+ case 'openletter':{
+  const l=SECRET_LETTERS.find(x=>x.id===b.dataset.value);
+  if(!l||!l.unlocked(state))return;
+  state.rewards=state.rewards||{claimedVouchers:{},openedLetters:{}};
+  state.rewards.openedLetters[l.id]=new Date().toISOString();
+  save();
+  launchConfetti(0.4);
+  render();
+  break;
+ }
+ case 'toggleletter':{
+  const card=b.closest('.letter-card');
+  const paper=card?.querySelector('.letter-paper');
+  if(paper){
+   const isHidden=paper.style.display==='none';
+   paper.style.display=isHidden?'block':'none';
+   b.textContent=isHidden?'Guardar / Esconder':'Reabrir cartinha';
+  }
+  break;
+ }
 }});
 document.addEventListener('change',async e=>{const t=e.target;const map={'topic-filter':v=>topicFilter=v,'pool-filter':v=>poolFilter=v,'count-filter':v=>countFilter=v,'metric-period':v=>metricPeriod=v,'metric-base':v=>metricBase=v,'metric-topic':v=>metricTopic=v,'essay-topic':v=>essayId=v};if(map[t.id]){map[t.id](t.value);render();}if(t.dataset.topicStatus){state.topicStatus[t.dataset.topicStatus]=t.value;save();toast('Situação da matéria salva.');}if(t.dataset.essayCheck!==undefined){const d=state.drafts[essayId]??={text:'',checks:[]},i=Number(t.dataset.essayCheck);d.checks=t.checked?[...new Set([...d.checks,i])]:d.checks.filter(x=>x!==i);save();}if(t.id==='backup-file'&&t.files[0]){try{if(t.files[0].size>10*1024*1024)throw new Error('O backup excede o limite de 10 MB.');const other=Core.validateBackup(JSON.parse(await t.files[0].text()),SEED,TOPICS);if(storageIssue)throw new Error('Não é possível importar enquanto o histórico local estiver indisponível. Exporte os dados existentes primeiro.');const existing=new Set(state.attempts.map(a=>a.id)),newCount=other.attempts.filter(a=>!existing.has(a.id)).length;dialog('Combinar este backup?',`${newCount} nova(s) tentativa(s) serão incorporadas. Anotações locais serão preservadas quando houver conflito.`,'Importar',()=>{state=Core.merge(state,other);save();render();toast('Backup combinado com seu histórico.');});}catch(err){toast(err.message||'Não foi possível importar o arquivo.');}t.value='';}});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.note){state.notes[t.dataset.note]=t.value;save();}if(t.id==='essay-text'){const d=state.drafts[essayId]??={text:'',checks:[]};d.text=t.value;save();$('#essay-counter').textContent=essayCount(t.value);}});

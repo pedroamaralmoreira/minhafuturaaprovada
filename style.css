@@ -1557,3 +1557,471 @@ tbody tr:last-child td {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* =========================================================================
+   SISTEMA DE RECOMPENSAS, CONQUISTAS E ANIMAÇÕES
+   ========================================================================= */
+
+.confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
+}
+
+/* Home Banner de Recompensas */
+.reward-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(245, 238, 255, 0.95), rgba(254, 240, 248, 0.95));
+  border: 1px solid rgba(196, 167, 245, 0.45);
+  border-radius: 18px;
+  padding: 18px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 18px rgba(124, 77, 204, 0.06);
+  animation: slideInDown 0.4s ease-out;
+}
+
+.reward-strip-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.reward-strip-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7c4dcc, #a855f7);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(124, 77, 204, 0.25);
+  animation: pulseGlow 2.5s infinite;
+}
+
+.rewards-section {
+  margin-top: 32px;
+  margin-bottom: 24px;
+}
+
+.section-title-wrap {
+  margin-bottom: 16px;
+}
+
+.section-title-wrap h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c154d;
+  margin-bottom: 4px;
+}
+
+/* --- VOUCHERS (VALES DO AMOR) --- */
+.vouchers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.voucher-card {
+  position: relative;
+  display: flex;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px dashed #d8b4fe;
+  box-shadow: 0 4px 14px rgba(124, 77, 204, 0.05);
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
+.voucher-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(124, 77, 204, 0.12);
+}
+
+.voucher-card.locked {
+  opacity: 0.72;
+  border-color: #e5e7eb;
+  background: #fafafa;
+}
+
+.voucher-card.claimed {
+  background: #fdfaf7;
+  border-color: #fcd34d;
+}
+
+.voucher-stub {
+  width: 76px;
+  background: linear-gradient(180deg, #7c4dcc, #9333ea);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 6px;
+  gap: 8px;
+  border-right: 2px dashed #d8b4fe;
+}
+
+.voucher-card.locked .voucher-stub {
+  background: #9ca3af;
+  border-right-color: #d1d5db;
+}
+
+.voucher-card.claimed .voucher-stub {
+  background: linear-gradient(180deg, #d97706, #f59e0b);
+  border-right-color: #fde68a;
+}
+
+.voucher-emoji {
+  font-size: 28px;
+}
+
+.voucher-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.voucher-content {
+  flex: 1;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.voucher-content .eyebrow {
+  color: #7c4dcc;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.voucher-reward {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.voucher-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.voucher-req {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.voucher-date {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.voucher-action {
+  display: flex;
+  align-items: center;
+  padding-right: 16px;
+}
+
+.claimed-stamp {
+  border: 2px solid #d97706;
+  color: #d97706;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transform: rotate(-8deg);
+  opacity: 0.9;
+  background: #fef3c7;
+}
+
+.locked-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- MEDALHAS --- */
+.medals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.medal-card {
+  background: #ffffff;
+  border: 1px solid #ede9fe;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(124, 77, 204, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.medal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(124, 77, 204, 0.09);
+}
+
+.medal-card.locked {
+  filter: grayscale(0.8);
+  opacity: 0.7;
+  background: #f9fafb;
+}
+
+.medal-card.unlocked {
+  border-color: #c4a7f5;
+  background: linear-gradient(180deg, #ffffff, #faf5ff);
+}
+
+.medal-icon-wrap {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #f3e8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.medal-card.unlocked .medal-icon-wrap {
+  background: linear-gradient(135deg, #fef08a, #fde047);
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.3);
+}
+
+.medal-emoji {
+  font-size: 28px;
+}
+
+.medal-sparkle {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 14px;
+  animation: spinSlow 4s linear infinite;
+}
+
+.medal-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2c154d;
+  margin-bottom: 6px;
+}
+
+.medal-card p {
+  font-size: 11.5px;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  flex-grow: 1;
+}
+
+.medal-progress {
+  width: 100%;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+/* --- CARTINHAS SECRETAS --- */
+.letters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.letter-card {
+  background: #ffffff;
+  border: 1px solid #ede9fe;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(124, 77, 204, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.letter-card.locked {
+  background: #fafafa;
+  border-color: #e5e7eb;
+  opacity: 0.75;
+}
+
+.letter-card.opened {
+  border-color: #d8b4fe;
+  background: linear-gradient(180deg, #ffffff, #fdfaff);
+  box-shadow: 0 8px 26px rgba(124, 77, 204, 0.1);
+}
+
+.letter-head {
+  margin-bottom: 12px;
+}
+
+.letter-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.letter-stamp {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #f3e8ff;
+  color: #7c4dcc;
+}
+
+.letter-card.locked .letter-stamp {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.letter-card.opened .letter-stamp {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.letter-locked-box,
+.letter-unlocked-box {
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.letter-unlocked-box {
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+  color: #5b21b6;
+}
+
+.letter-paper {
+  background: #fffdfa;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 10px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #431407;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.02);
+  animation: unfoldLetter 0.4s ease-out;
+}
+
+.letter-text {
+  margin-bottom: 12px;
+}
+
+.letter-sign {
+  text-align: right;
+  font-size: 12px;
+  font-style: italic;
+  color: #7c2d12;
+}
+
+.letter-action-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+/* Microanimações nos botões de resposta e cards */
+.choice {
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.choice:active {
+  transform: scale(0.97);
+}
+
+.choice.selected {
+  animation: choicePop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn {
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.15s ease;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@keyframes choicePop {
+  0% { transform: scale(0.95); }
+  60% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 4px 12px rgba(124, 77, 204, 0.25); }
+  50% { box-shadow: 0 6px 20px rgba(168, 85, 247, 0.45); }
+}
+
+@keyframes spinSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes unfoldLetter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
