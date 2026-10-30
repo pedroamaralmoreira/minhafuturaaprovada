@@ -152,7 +152,7 @@ function rewardStrip(){
  const vClaimed=Object.keys(rw.claimedVouchers||{}).length;
  const mEarned=MEDALS.filter(m=>m.unlocked(state,SEED)).length;
  const lUnlocked=SECRET_LETTERS.filter(l=>l.unlocked(state)).length;
- return `<section class="reward-strip"><div><div class="reward-strip-label">${icon('heart')} Mimos & Conquistas de Estudo</div><div class="reward-strip-title">Você já tem <strong>${mEarned} de ${MEDALS.length} medalhas</strong>, <strong>${lUnlocked} cartinha(s) liberada(s)</strong> e <strong>${vClaimed} vale(s) resgatado(s)</strong>!</div></div>${button(`${icon('gift')} Abrir Conquistas e Vales`,'nav','primary sm','data-value="rewards"')}</section>`;
+ return `<section class="reward-strip"><div><div class="reward-strip-label">${icon('heart')} Mimos & Conquistas de Estudo</div><div class="reward-strip-title">Você já tem <strong>${mEarned} de ${MEDALS.length} medalhas</strong>, <strong>${lUnlocked} cartinha(s) liberada(s)</strong> e <strong>${vClaimed} de ${VOUCHERS.length} vales resgatados</strong>!</div></div>${button(`${icon('gift')} Abrir Conquistas e Vales`,'nav','primary sm','data-value="rewards"')}</section>`;
 }
 function home(){const s=Core.stats(state.attempts),pending=Core.pending(state.attempts),seen=new Set(state.attempts.map(a=>a.qid));const studied=TOPICS.filter(t=>state.attempts.some(a=>a.topic===t.id)).length;const featured=['san','alim','legvet','info','al','epi'].map(id=>topic(id)).filter(Boolean);
  return title('Rumo à Posse, Meu Amor','minha-futura-aprovada · Fiscal Estadual Agropecuário — Medicina Veterinária (ADEAL)',button(`${icon('book')} Escolher matéria`,'nav','','data-value="practice"'))+
@@ -172,20 +172,39 @@ function rewards(){
   const isUn=v.check(state);
   const isClaimed=Boolean(rw.claimedVouchers?.[v.id]);
   const claimedAt=rw.claimedVouchers?.[v.id];
+  const cur=v.current?v.current(state):(state.attempts||[]).length;
+  const pct=Math.min(100,Math.round((cur/v.target)*100));
+  const diff=v.target-cur;
   return `<div class="voucher-card ${isClaimed?'claimed':isUn?'unlocked':'locked'}">
-   <div class="voucher-notch"></div>
-   <div class="voucher-info">
-    <div class="voucher-badge">${v.emoji} VALE DO AMOR</div>
-    <div class="voucher-title">${esc(v.title)}</div>
-    <div class="voucher-reward">${esc(v.reward)}</div>
-    <div class="voucher-req">${icon('target')} <span>Requisito: <strong>${esc(v.reqText)}</strong></span></div>
+   <div class="voucher-head">
+    <div class="voucher-tag-wrap">
+     <span class="voucher-emoji">${v.emoji}</span>
+     <span class="voucher-category">${esc(v.costCategory||'Mimo')}</span>
+    </div>
+    <span class="voucher-status ${isClaimed?'status-claimed':isUn?'status-unlocked':'status-locked'}">
+     ${isClaimed?'Resgatado ❤️':isUn?'Liberado 🎉':'Bloqueado 🔒'}
+    </span>
    </div>
-   <div class="voucher-action">
+   <div class="voucher-body">
+    <h3 class="voucher-title">${esc(v.title)}</h3>
+    <p class="voucher-reward">${esc(v.reward)}</p>
+    <div class="voucher-progress-box">
+     <div class="progress-info">
+      <span class="voucher-req-label">${icon('target')} <span>Requisito: <strong>${esc(v.reqText)}</strong></span></span>
+      <span class="voucher-count"><strong>${cur}</strong> / ${v.target}</span>
+     </div>
+     <div class="bar"><span style="width:${pct}%"></span></div>
+     <div class="voucher-progress-note small muted">
+      ${isClaimed ? `Resgatado com amor em ${date(claimedAt)} ❤️` : isUn ? 'Meta batida! Já pode cobrar do seu amor!' : `Faltam ${diff > 0 ? diff : 0} questões para liberar`}
+     </div>
+    </div>
+   </div>
+   <div class="voucher-foot">
     ${isClaimed
       ? `<div class="claimed-stamp">Resgatado em ${date(claimedAt)} ❤️</div>`
       : isUn
         ? button(`${icon('heart')} Resgatar Mimo`,'claimvoucher','primary sm',`data-value="${v.id}"`)
-        : `<div class="locked-hint"><span class="lock-icon">🔒</span> Bloqueado</div>`
+        : `<div class="locked-hint"><span>🔒</span> Complete o requisito para liberar</div>`
     }
    </div>
   </div>`;
@@ -254,9 +273,9 @@ function rewards(){
  </div>`+
  `<section class="rewards-section">
   <div class="rewards-section-head">
-   <span class="rewards-badge">Mimos na Vida Real</span>
+   <span class="rewards-badge">Mimos na Vida Real · À Distância</span>
    <h2>🎟️ Vales do Amor (Cobráveis Comigo)</h2>
-   <p>Cada meta de estudo concluída dá direito a um vale oficial! Quando desbloquear, basta clicar em <strong>Resgatar Mimo</strong> e me mostrar a tela para cobrar o seu presente.</p>
+   <p>Cada meta de estudo dá direito a um mimo oficial! Pensados com carinho para o nosso namoro à distância: momentos juntos, pix do cafezinho e até o chefão supremo (gelato Bacio di Latte!). Quando liberar a meta, clique em <strong>Resgatar Mimo</strong> e me cobre no WhatsApp!</p>
   </div>
   <div class="vouchers-grid">${vouchersHtml}</div>
  </section>`+

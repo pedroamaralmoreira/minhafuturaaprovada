@@ -6,7 +6,7 @@ const dir=__dirname;
 const C=require(path.join(dir,'core.js'));
 const ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(dir,'data.js'),'utf8')+';this.seed=SEED;this.topics=TOPICS;this.prompts=PROMPTS;this.vouchers=VOUCHERS;this.medals=MEDALS;this.letters=SECRET_LETTERS;',ctx);
 const seed=JSON.parse(JSON.stringify(ctx.seed)),topics=JSON.parse(JSON.stringify(ctx.topics)),prompts=JSON.parse(JSON.stringify(ctx.prompts));
-assert.equal(ctx.vouchers.length,5);
+assert.equal(ctx.vouchers.length,7);
 assert.equal(ctx.medals.length,8);
 assert.equal(ctx.letters.length,4);
 const a=(id,qid,choice,key=true)=>({id,qid,choice,key,topic:'epi',confidence:'high',at:'2026-10-29T20:00:00.000Z',session:'s1'});

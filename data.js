@@ -557,48 +557,84 @@ const PROMPTS = [
 ];
 const VOUCHERS = [
   {
-    id: 'v_lanche',
-    title: 'Café na Cama ou Lanchinho na Mesa',
-    emoji: '☕🍰',
-    reward: 'Seu café, chá ou lanche favorito preparado com carinho e servido onde você preferir descansar ou estudar!',
-    reqText: 'Resolver 15 questões no total',
-    check: (s) => (s.attempts?.length || 0) >= 15
+    id: 'v_chamada',
+    title: 'Noite do Desabafo & Cafuné Virtual',
+    emoji: '📞✨',
+    costCategory: 'Custo R$ 0 · Carinho Puro',
+    reward: 'Uma chamada de vídeo especial só para rir, falar bobeira, desabafar e te ouvir sem nenhuma menção a edital ou concurso, até você pegar no sono.',
+    reqText: 'Resolver 30 questões no total',
+    target: 30,
+    current: (s) => (s.attempts || []).length,
+    check: (s) => (s.attempts?.length || 0) >= 30
   },
   {
-    id: 'v_massagem',
-    title: 'Massagem Relaxante Pós-Estudo',
-    emoji: '💆‍♀️',
-    reward: '30 minutinhos de massagem caprichada nos ombros, costas ou pés com creminho, sem falar de concurso!',
-    reqText: 'Resolver 35 questões no total',
-    check: (s) => (s.attempts?.length || 0) >= 35
+    id: 'v_playlist',
+    title: 'Playlist Exclusiva para a Futura Fiscal',
+    emoji: '🎧💜',
+    costCategory: 'Custo R$ 0 · Personalizado',
+    reward: 'Uma playlist personalizada criada por mim no Spotify com suas músicas preferidas, para dar foco no estudo ou desacelerar a mente após a bateria de questões.',
+    reqText: 'Resolver 65 questões no total',
+    target: 65,
+    current: (s) => (s.attempts || []).length,
+    check: (s) => (s.attempts?.length || 0) >= 65
   },
   {
-    id: 'v_cinema',
-    title: 'Dia Livre com Sessão Cinema & Pipoca',
+    id: 'v_pixcafe',
+    title: 'Pix do Cafezinho com Recadinho Fofo',
+    emoji: '☕🥐',
+    costCategory: 'Mimo Baratinho · R$ 5 a 10',
+    reward: 'Um Pix do cafezinho ou pão de queijo com mensagem de carinho no extrato para dar aquela dose extra de ânimo no meio da tarde de estudos!',
+    reqText: 'Resolver 110 questões no total',
+    target: 110,
+    current: (s) => (s.attempts || []).length,
+    check: (s) => (s.attempts?.length || 0) >= 110
+  },
+  {
+    id: 'v_cinedate',
+    title: 'Cine Date à Distância com Pipoca',
     emoji: '🎬🍿',
-    reward: 'Um descanso 100% merecido e sem culpa: maratona da sua série ou filmes favoritos no sofá com pipoca, cafuné e coberta.',
-    reqText: 'Resolver 70 questões no total',
-    check: (s) => (s.attempts?.length || 0) >= 70
+    costCategory: 'Custo R$ 0 · Momento Juntos',
+    reward: 'Sessão de filme ou série juntinhos sincronizado na chamada de vídeo (Discord/Teleparty) com pipoca e você escolhendo o que vamos assistir!',
+    reqText: 'Resolver 160 questões no total',
+    target: 160,
+    current: (s) => (s.attempts || []).length,
+    check: (s) => (s.attempts?.length || 0) >= 160
   },
   {
-    id: 'v_jantar',
-    title: 'Jantar Especial Escolhido por Você',
-    emoji: '🍕🍣',
-    reward: 'Noite de comemoração! Você escolhe o cardápio: rodízio japonês, pizza crocante, hambúrguer ou seu restaurante preferido.',
-    reqText: 'Concluir 1 Simulado Oficial ou bater 100 questões',
-    check: (s) => (s.attempts?.length || 0) >= 100 || (s.attempts || []).some(a => a.session && a.session.startsWith('sim-'))
+    id: 'v_carta',
+    title: 'Carta Escrita à Mão pelos Correios',
+    emoji: '💌📮',
+    costCategory: 'Custo Baixo (Carta Social) · Puro Amor',
+    reward: 'Uma carta física de papel escrita à mão com a minha própria letra e perfume, enviada pelos Correios para você guardar com carinho no seu cantinho de estudos.',
+    reqText: 'Resolver 210 questões no total',
+    target: 210,
+    current: (s) => (s.attempts || []).length,
+    check: (s) => (s.attempts?.length || 0) >= 210
   },
   {
-    id: 'v_presente',
-    title: 'Presente Surpresa da Futura Fiscal',
-    emoji: '🎁💐',
-    reward: 'Um presente físico surpresa comprado especialmente pelo seu maior fã para coroar a sua dedicação aos estudos!',
-    reqText: 'Alcançar 140 questões com saldo de pontos positivo',
+    id: 'v_docinho',
+    title: 'iFood de um Docinho / Açaí Favorito',
+    emoji: '🛵🍰',
+    costCategory: 'Mimo iFood · Sobremesa',
+    reward: 'Um docinho, fatia de bolo, brigadeiro gourmet ou açaí bem caprichado que você estiver com vontade, pedido por mim no iFood e entregue na sua porta!',
+    reqText: 'Resolver 270 questões no total',
+    target: 270,
+    current: (s) => (s.attempts || []).length,
+    check: (s) => (s.attempts?.length || 0) >= 270
+  },
+  {
+    id: 'v_bacio',
+    title: 'Prêmio Máximo: Gelato Bacio di Latte no Delivery!',
+    emoji: '🍨👑',
+    costCategory: 'Chefão Supremo · Prêmio da Aprovação',
+    reward: 'O grande prêmio de elite dos seus estudos! Um pote de gelato artesanal da Bacio di Latte pedido no delivery diretamente na sua casa com os seus sabores favoritos para comemorar em grande estilo!',
+    reqText: 'Resolver 340 questões ou Concluir 1 Simulado Real Oficial',
+    target: 340,
+    current: (s) => (s.attempts || []).length,
     check: (s) => {
       const att = s.attempts || [];
-      const correct = att.filter(a => a.choice !== null && a.choice === a.key).length;
-      const wrong = att.filter(a => a.choice !== null && a.choice !== a.key).length;
-      return att.length >= 140 && (correct - wrong) > 0;
+      const didSim = att.some(a => a.session && (s.session?.ids?.length >= 60 || String(a.session).startsWith('sim-')));
+      return att.length >= 340 || didSim;
     }
   }
 ];
