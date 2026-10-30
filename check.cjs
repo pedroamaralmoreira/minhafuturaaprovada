@@ -22,10 +22,12 @@ assert.equal(C.merge(b,b).attempts.length,4);
 assert.throws(()=>C.validateBackup({...b,version:3},seed,topics));
 assert.throws(()=>C.validateBackup({...b,attempts:[{...rows[0],choice:'true'}]},seed,topics));
 assert.throws(()=>C.validateBackup({...b,attempts:[{...rows[0],qid:'unknown'}]},seed,topics));
-assert.ok(seed.length>=180,`Expected >=180 questions, got ${seed.length}`);
+assert.ok(seed.length>=270,`Expected >=270 questions, got ${seed.length}`);
 assert.equal(new Set(seed.map(q=>q.id)).size,seed.length);
 assert.equal(new Set(seed.map(q=>q.text.trim().toLowerCase())).size,seed.length,'Duplicate question text found');
 assert.equal(prompts.length,6);
+const hardQs=seed.filter(q=>q.hard);
+assert.ok(hardQs.length>=90,`Expected >=90 hard questions, got ${hardQs.length}`);
 for(const q of seed){
  assert.ok(topics.find(t=>t.id===q.topic),`Invalid topic ${q.topic}`);
  assert.equal(typeof q.answer,'boolean');
@@ -33,11 +35,13 @@ for(const q of seed){
 }
 for(const t of topics){
  const cnt=seed.filter(q=>q.topic===t.id).length;
- assert.ok(cnt>=12,`Topic ${t.id} has only ${cnt} questions`);
+ const hcnt=hardQs.filter(q=>q.topic===t.id).length;
+ assert.ok(cnt>=18,`Topic ${t.id} has only ${cnt} questions`);
+ assert.ok(hcnt>=6,`Topic ${t.id} has only ${hcnt} hard questions`);
 }
 const basCount=seed.filter(q=>topics.find(t=>t.id===q.topic).group==='Básicos').length;
 const espCount=seed.filter(q=>topics.find(t=>t.id===q.topic).group==='Específicos').length;
-assert.ok(basCount>=70,`Expected >=70 Básicos, got ${basCount}`);
-assert.ok(espCount>=100,`Expected >=100 Específicos, got ${espCount}`);
+assert.ok(basCount>=110,`Expected >=110 Básicos, got ${basCount}`);
+assert.ok(espCount>=155,`Expected >=155 Específicos, got ${espCount}`);
 for(const file of ['data.js','core.js','app.js'])new vm.Script(fs.readFileSync(path.join(dir,file),'utf8'));
-console.log(`PASS: ${seed.length} questions (${basCount} P1 Básicos + ${espCount} P2 Específicos across all ${topics.length} topics), ${prompts.length} essay prompts, simulado mode, backup validation and JS syntax verified.`);
+console.log(`PASS: ${seed.length} questions (${basCount} P1 + ${espCount} P2, including ${hardQs.length} Nível Difícil across all ${topics.length} topics), ${prompts.length} essay prompts, simulado mode, backup validation and JS syntax verified.`);

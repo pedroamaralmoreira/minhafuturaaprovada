@@ -1523,3 +1523,19 @@ tbody tr:last-child td {
   font-size: 12.5px;
   line-height: 1.55;
 }
+
+.tag.tag-hard {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f9eaf0;
+  color: #8f2240;
+  border: 1px solid #ecc6d3;
+  font-weight: 700;
+}
+
+.exam-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
