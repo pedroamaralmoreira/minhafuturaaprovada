@@ -1431,3 +1431,95 @@ tbody tr:last-child td {
     font-size: 12px;
   }
 }
+
+.exam-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  border-radius: 14px;
+  background: var(--white);
+  border: 1px solid var(--tint-border);
+}
+
+.exam-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.exam-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.simulado-card {
+  background: linear-gradient(135deg, #2c154d 0%, #46217a 100%);
+  color: var(--white);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.simulado-card .eyebrow {
+  color: var(--lavender);
+  margin-bottom: 6px;
+}
+
+.simulado-card h2 {
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.simulado-card p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  max-width: 560px;
+}
+
+.simulado-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.simulado-card .btn.ghost-light {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: var(--white);
+}
+
+.simulado-card .btn.ghost-light:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.block-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 26px 0 12px;
+}
+
+.code-box {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.55;
+}

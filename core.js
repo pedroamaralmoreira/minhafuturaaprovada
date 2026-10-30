@@ -18,8 +18,8 @@ const Core = {
   for(const k of ['notes','drafts','topicStatus'])if(!input[k]||typeof input[k]!=='object'||Array.isArray(input[k]))fail();
   for(const [k,v]of Object.entries(input.notes))if(!ids.has(k)||!text(v))fail();
   for(const [k,v]of Object.entries(input.topicStatus))if(!validTopic(k)||!['new','studying','reviewed'].includes(v))fail();
-  for(const [k,v]of Object.entries(input.drafts))if(!['p1','p2','p3'].includes(k)||!v||!text(v.text)||!Array.isArray(v.checks)||v.checks.some(c=>!Number.isInteger(c)||c<0||c>3))fail();
-  if(input.session){const s=input.session;if(!text(s.id,100)||!Array.isArray(s.ids)||s.ids.length===0||s.ids.some(id=>!ids.has(id))||new Set(s.ids).size!==s.ids.length||!Number.isInteger(s.index)||s.index<0||s.index>=s.ids.length||!['practice','test','review','favorites'].includes(s.mode)||!Number.isFinite(Date.parse(s.started))||typeof s.done!=='boolean')fail();}
+  for(const [k,v]of Object.entries(input.drafts))if(!/^p([1-9]|[1-9]\d)$/.test(k)||!v||!text(v.text)||!Array.isArray(v.checks)||v.checks.some(c=>!Number.isInteger(c)||c<0||c>10))fail();
+  if(input.session){const s=input.session;if(!text(s.id,100)||!Array.isArray(s.ids)||s.ids.length===0||s.ids.some(id=>!ids.has(id))||new Set(s.ids).size!==s.ids.length||!Number.isInteger(s.index)||s.index<0||s.index>=s.ids.length||!['practice','test','simulado','review','favorites'].includes(s.mode)||!Number.isFinite(Date.parse(s.started))||typeof s.done!=='boolean')fail();}
   return input;
  },
  merge(a,b){
